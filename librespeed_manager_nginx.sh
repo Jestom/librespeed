@@ -36,7 +36,7 @@ function install_dependencies() {
     esac
 }
 
-# 安装 LibreSpeed 后端 + 前端
+# 安装 LibreSpeed 后端 + 前端（legacy）
 function install_librespeed_nginx() {
     detect_os
     install_dependencies
@@ -50,11 +50,12 @@ function install_librespeed_nginx() {
     tar -xvzf speedtest-go.tar.gz
     chmod +x speedtest-go
 
-    echo "🌐 下载前端资源"
+    echo "🌐 下载 legacy 前端资源（含全部样式）"
     rm -rf "$FRONTEND_DIR"
-    git clone https://github.com/librespeed/speedtest.git "$FRONTEND_DIR"
+    git clone https://github.com/librespeed/speedtest-legacy.git "$FRONTEND_DIR"
 
     echo "🎨 设置默认测速页面为纯 HTML（静态）"
+    rm -f "$FRONTEND_DIR/index.html"
     cp "$FRONTEND_DIR/example-singleServer-pretty.html" "$FRONTEND_DIR/index.html"
 
     echo "⚙️ 配置 nginx（静态测速页面）"
