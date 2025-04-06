@@ -7,7 +7,7 @@
 * 再次运行本脚本只需要输入`./librespeed_manager.sh`回车即可
 * 运行脚本请使用 root 身份
 
-## 脚本 v1.1.5（自动安装Nginx）
+## 脚本 v1.1.5（自动安装Nginx+PHP）
 
 * 启动脚本  
   `wget --no-check-certificate -O librespeed_manager_nginx.sh https://raw.githubusercontent.com/Jestom/librespeed/master/librespeed_manager_nginx.sh && chmod +x librespeed_manager_nginx.sh && ./librespeed_manager_nginx.sh`  
