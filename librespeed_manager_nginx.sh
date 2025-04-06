@@ -4,6 +4,7 @@ INSTALL_DIR="/opt/speedtest"
 FRONTEND_DIR="/var/www/html/librespeed"
 SERVICE_FILE="/etc/systemd/system/speedtest.service"
 DOWNLOAD_URL="https://github.com/librespeed/speedtest-go/releases/download/v1.1.5/speedtest-go_1.1.5_linux_amd64.tar.gz"
+FRONTEND_ZIP_URL="https://github.com/librespeed/speedtest-legacy/archive/refs/heads/master.zip"
 OS=""
 
 # 检测系统
@@ -36,31 +37,31 @@ function install_dependencies() {
     esac
 }
 
-# 安装 LibreSpeed 后端 + 前端（legacy）
+# 安装 LibreSpeed 后端 + 前端
 function install_librespeed_nginx() {
     detect_os
     install_dependencies
 
-    echo "🛠️ 创建后端目录 $INSTALL_DIR"
+    echo "🛠️ 创建目录 $INSTALL_DIR"
     mkdir -p "$INSTALL_DIR"
     cd "$INSTALL_DIR"
 
-    echo "⬇️ 下载后端 speedtest-go v1.1.5"
+    echo "⬇️ 下载 LibreSpeed 后端 v1.1.5"
     wget -q --show-progress "$DOWNLOAD_URL" -O speedtest-go.tar.gz
     tar -xvzf speedtest-go.tar.gz
     chmod +x speedtest-go
 
-    echo "🌐 下载 legacy 前端 zip 包"
-    wget -q https://github.com/librespeed/speedtest-legacy/archive/refs/heads/master.zip -O /tmp/speedtest-legacy.zip
-    unzip -o /tmp/speedtest-legacy.zip -d /tmp/
+    echo "🌐 下载并部署前端页面（legacy 静态 HTML）"
+    wget -q "$FRONTEND_ZIP_URL" -O /tmp/speedtest-legacy.zip
+    unzip -qo /tmp/speedtest-legacy.zip -d /tmp/
     rm -rf "$FRONTEND_DIR"
     mv /tmp/speedtest-legacy-master "$FRONTEND_DIR"
 
-    echo "🎨 设置默认测速页面为纯 HTML（静态）"
+    echo "🎯 设置默认首页为 example-singleServer-pretty.html"
     rm -f "$FRONTEND_DIR/index.html"
     cp "$FRONTEND_DIR/example-singleServer-pretty.html" "$FRONTEND_DIR/index.html"
 
-    echo "⚙️ 配置 nginx（静态测速页面）"
+    echo "⚙️ 配置 nginx"
     cat <<EOF > /etc/nginx/sites-enabled/default
 server {
     listen 80 default_server;
@@ -74,10 +75,9 @@ server {
 }
 EOF
 
-    echo "🔄 重启 nginx"
     systemctl restart nginx
 
-    echo "🧾 写入 systemd 服务"
+    echo "🔧 写入 systemd 服务"
     cat <<EOL > "$SERVICE_FILE"
 [Unit]
 Description=LibreSpeed Backend v1.1.5
@@ -93,42 +93,40 @@ User=root
 WantedBy=multi-user.target
 EOL
 
-    echo "✅ 启动后端服务"
+    echo "🚀 启动测速服务"
     systemctl daemon-reexec
     systemctl daemon-reload
     systemctl enable speedtest
-    systemctl start speedtest
+    systemctl restart speedtest
 
     IP=$(hostname -I | awk '{print $1}')
-    echo "🎉 安装完成！访问测速页面：http://$IP/"
+    echo ""
+    echo "🎉 部署完成！测速地址：http://$IP/"
 }
 
 function start_librespeed() {
-    systemctl start speedtest && echo "✅ LibreSpeed 后端已启动"
+    systemctl start speedtest && echo "✅ 已启动"
 }
 
 function stop_librespeed() {
-    systemctl stop speedtest && echo "🛑 LibreSpeed 后端已停止"
+    systemctl stop speedtest && echo "🛑 已停止"
 }
 
 function restart_librespeed() {
-    systemctl restart speedtest && echo "🔁 LibreSpeed 后端已重启"
+    systemctl restart speedtest && echo "🔁 已重启"
 }
 
 function uninstall_librespeed_nginx() {
-    echo "⚠️ 正在卸载 LibreSpeed（v1.1.5 + nginx）"
+    echo "⚠️ 正在卸载 LibreSpeed..."
     systemctl stop speedtest
     systemctl disable speedtest
     rm -f "$SERVICE_FILE"
     systemctl daemon-reload
 
-    echo "🧹 删除测速服务文件夹：$INSTALL_DIR"
     rm -rf "$INSTALL_DIR"
-
-    echo "🧹 删除前端目录：$FRONTEND_DIR"
     rm -rf "$FRONTEND_DIR"
 
-    echo "♻️ 恢复 nginx 默认配置"
+    echo "🔄 恢复 nginx 默认配置"
     cat <<EOF > /etc/nginx/sites-enabled/default
 server {
     listen 80 default_server;
@@ -157,7 +155,7 @@ function show_menu() {
     echo -n "请输入选项 [1-6]: "
 }
 
-# 菜单主循环
+# 主菜单循环
 while true; do
     show_menu
     read choice
