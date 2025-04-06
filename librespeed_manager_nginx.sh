@@ -19,14 +19,14 @@ function detect_os() {
 
 # 安装依赖
 function install_dependencies() {
-    echo "📦 正在安装依赖（nginx、wget、tar、git、systemd）..."
+    echo "📦 正在安装依赖（nginx、wget、tar、unzip、systemd）..."
     case "$OS" in
         ubuntu|debian)
             apt update -y
-            apt install -y wget tar nginx systemd git
+            apt install -y wget tar unzip nginx systemd
             ;;
         centos|rocky|almalinux|rhel)
-            yum install -y wget tar nginx systemd git
+            yum install -y wget tar unzip nginx systemd
             systemctl enable nginx
             ;;
         *)
@@ -50,9 +50,11 @@ function install_librespeed_nginx() {
     tar -xvzf speedtest-go.tar.gz
     chmod +x speedtest-go
 
-    echo "🌐 下载 legacy 前端资源（含全部样式）"
+    echo "🌐 下载 legacy 前端 zip 包"
+    wget -q https://github.com/librespeed/speedtest-legacy/archive/refs/heads/master.zip -O /tmp/speedtest-legacy.zip
+    unzip -o /tmp/speedtest-legacy.zip -d /tmp/
     rm -rf "$FRONTEND_DIR"
-    git clone https://github.com/librespeed/speedtest-legacy.git "$FRONTEND_DIR"
+    mv /tmp/speedtest-legacy-master "$FRONTEND_DIR"
 
     echo "🎨 设置默认测速页面为纯 HTML（静态）"
     rm -f "$FRONTEND_DIR/index.html"
