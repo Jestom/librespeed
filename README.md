@@ -18,7 +18,8 @@
 特别感谢项目[speedtest-go](https://github.com/librespeed/speedtest-go/)
 该脚本使用的是speedtest-go
 
-默认端口号：8989
+v1.1.0默认端口号：8989
+v1.1.5默认端口号：80
 
 ## 支持系统
 Debian、Ubuntu、CentOS
