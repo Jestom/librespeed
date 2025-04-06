@@ -100,7 +100,7 @@ function uninstall_librespeed() {
 function show_menu() {
     echo ""
     echo "=========================================="
-    echo "    🚀 LibreSpeed 内网测速管理脚本 (最终版)"
+    echo "    🚀 LibreSpeed 内网测速管理脚本"
     echo "=========================================="
     echo " 1. 安装 LibreSpeed"
     echo " 2. 启动 LibreSpeed"
