@@ -3,6 +3,7 @@
 INSTALL_DIR="/opt/speedtest"
 SERVICE_FILE="/etc/systemd/system/speedtest.service"
 DOWNLOAD_URL="https://github.com/librespeed/speedtest-go/releases/download/v1.1.0/speedtest-go_1.1.0_linux_amd64.tar.gz"
+OS=""
 
 # 检测系统类型
 function detect_os() {
@@ -15,7 +16,7 @@ function detect_os() {
     fi
 }
 
-# 安装必要工具
+# 安装必要依赖
 function install_dependencies() {
     echo "📦 正在安装依赖（wget、tar、systemd）..."
     case "$OS" in
@@ -34,6 +35,9 @@ function install_dependencies() {
 }
 
 function install_librespeed() {
+    detect_os
+    install_dependencies
+
     echo "🛠️ 安装目录：$INSTALL_DIR"
     mkdir -p "$INSTALL_DIR"
     cd "$INSTALL_DIR"
@@ -107,10 +111,6 @@ function show_menu() {
     echo "=========================================="
     echo -n "请输入选项 [1-6]: "
 }
-
-# 初始化检测
-detect_os
-install_dependencies
 
 # 菜单主循环
 while true; do
