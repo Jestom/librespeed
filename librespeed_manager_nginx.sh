@@ -19,7 +19,7 @@ function detect_os() {
 
 # 安装依赖
 function install_dependencies() {
-    echo "📦 正在安装依赖（nginx、wget、tar、systemd）..."
+    echo "📦 正在安装依赖（nginx、wget、tar、git、systemd）..."
     case "$OS" in
         ubuntu|debian)
             apt update -y
@@ -53,6 +53,9 @@ function install_librespeed_nginx() {
     echo "🌐 下载前端资源"
     rm -rf "$FRONTEND_DIR"
     git clone https://github.com/librespeed/speedtest.git "$FRONTEND_DIR"
+
+    echo "🎨 设置默认测速页面为纯 HTML（静态）"
+    cp "$FRONTEND_DIR/example-singleServer-pretty.html" "$FRONTEND_DIR/index.html"
 
     echo "⚙️ 配置 nginx（静态测速页面）"
     cat <<EOF > /etc/nginx/sites-enabled/default
